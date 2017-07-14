@@ -4,8 +4,8 @@ using namespace std;
 #define D 3 // Numero input
 #define K 1 // Numero  output
 #define DIMENSIONE_SAMPLE 4
-#define LEARNING_RATE 0.006
-#define NUMERO_ITERAZIONI 100
+#define LEARNING_RATE 0.005
+#define EPSILON 0.0025 // Soglia del delta dei pesi sotto la quale si è raggiunta la convergenza
 
 int x[DIMENSIONE_SAMPLE][D] = {
 	{ 2,1,4 },{ 6,1,12 },{ 5,1,10 },{ 3,1,6 }
@@ -17,19 +17,24 @@ int r[DIMENSIONE_SAMPLE][K] = {
 
 
 void main() {
-	double w[D][K] = { 0.02, 0.01, 0.06 }; // Pesi dei percettroni
+	long double w[D][K] = { 0.02, 0.01, 0.06 }; // Pesi dei percettroni
+	int t; // Elemento del sample sotto esame
+	int i; // Neurone sotto esame
+	int j; // Input sotto esame
 
-	int it; // Iterazione attuale
-	for (it = 0; it < NUMERO_ITERAZIONI; it++) {
-		std::cout << it << " \t";
+	//Stampa intestazione
+	for (i = 0; i < K; i++)
+		for (j = 0; j < D; j++)
+			cout << "w[" << j << "][" << i << "]  \t";
+	cout << "maxDelta  \t" << "16" << endl << endl;
 
-		int t; // Elemento del sample sotto esame
-		int i; // Neurone sotto esame
-		int j; // Input sotto esame
+	long double maxDelta;
+	do {
+		maxDelta = 0;
 
 		for (t = 0; t < DIMENSIONE_SAMPLE; t++) {
-			double o[K], //somma delle sinapsi che convergono su ogni percettrone
-				y[K]; // output dei percettroni
+			long double o[K]; //somma delle sinapsi che convergono su ogni percettrone
+			long double y[K]; // output dei percettroni
 
 			for (i = 0; i < K; i++) {
 				o[i] = 0;
@@ -41,16 +46,21 @@ void main() {
 				y[i] = o[i]; // TODO: sigmoide
 
 			for (i = 0; i < K; i++) {
-				for (j = 0; j < D; j++)
-					w[j][i] = w[j][i] + LEARNING_RATE*(r[t][i] - y[i])*x[t][j];
+				for (j = 0; j < D; j++) {
+					long double delta = LEARNING_RATE*(r[t][i] - y[i])*x[t][j];
+					w[j][i] += delta;
+					maxDelta = delta > maxDelta ? delta : maxDelta; // maxDelta è il più grande fra se stesso e delta
+				}
 			}
-
-			cout << w[j] << "   \t"; // Stampa il valore temporaneo di ogni neurone
-
 		}
-		cout << endl;
-	}
 
-	cout << w[0][0] * 8 + w[1][0] * 1 + w[2][0] * 16; // la prova dovrebbe dare 16
-	cin >> it;
+		// Stampa il valore temporaneo di ogni neurone, il delta massimo e il risultato con i pesi attuali
+		for (i = 0; i < K; i++)
+			for (j = 0; j < D; j++)
+				cout << w[j][i] << "   \t";
+		cout << maxDelta << "   \t" << w[0][0] * 8 + w[1][0] * 1 + w[2][0] * 16 << endl;
+	} while (EPSILON < maxDelta);
+
+
+	cin >> t;
 }

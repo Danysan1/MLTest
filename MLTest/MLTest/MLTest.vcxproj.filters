@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Documents\Visual Studio 2017\Projects\MachineLearningTest0\MachineLearningTest0\MLTest.cpp">
+    <ClCompile Include="MLTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
